@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../BLoC/music_detail_bloc_provider.dart';
 import '../models/lyrics.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 
 class detailsUI extends StatefulWidget {
   final String artist_name;
@@ -71,132 +72,89 @@ class detailsUIState extends State<detailsUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:Text("Track Details"),
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(
+          color:Colors.black
+        ),
+        title:Text("Track Details",style: TextStyle(color: Colors.black)),
       ),
-      body: SafeArea(
-        child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ListView(
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                    Text('$track_name', style: TextStyle(fontSize: 20)),
-                    SizedBox(height: 20),
-                    Text('Artist', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                    Text('$artist_name',style: TextStyle(fontSize: 20)),
-                    SizedBox(height: 20),
-                    Text('Album Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                    Text('$album_name',style: TextStyle(fontSize: 20)),
-                    SizedBox(height: 20),
-                    Text('Explicit', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                    Text('$explicit',style: TextStyle(fontSize: 20)),
-                    SizedBox(height: 20),
-                    Text('Rating', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                    Text('$track_rating',style: TextStyle(fontSize: 20)),
-                    SizedBox(height: 20),
-                    Text('Lyrics', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                    Container(margin: EdgeInsets.only(top: 8.0,
-                        bottom: 8.0)),
-                    StreamBuilder(
-                      stream: bloc.movieTrailers,
-                      builder:
-                          (context, AsyncSnapshot<Future<lyrics>> snapshot) {
-                        if (snapshot.hasData) {
-                          return FutureBuilder(
-                            future: snapshot.data,
-                            builder: (context,
-                                AsyncSnapshot<lyrics> itemSnapShot) {
-                              if (itemSnapShot.hasData) {
-                                if (itemSnapShot.data.results.length > 0)
-                                  return trailerLayout(itemSnapShot.data);
-                                else
-                                  return noTrailer(itemSnapShot.data);
-                              } else {
-                                return Center(child: CircularProgressIndicator());
-                              }
-                            },
-                          );
-                        } else {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                      },
+      body: OfflineBuilder(
+        connectivityBuilder: (
+            BuildContext context,
+            ConnectivityResult connectivity,
+            Widget child,
+            ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          return Center(
+            child: connected?SafeArea(
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ListView(
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
+                            Text('$track_name', style: TextStyle(fontSize: 20)),
+                            SizedBox(height: 20),
+                            Text('Artist', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
+                            Text('$artist_name',style: TextStyle(fontSize: 20)),
+                            SizedBox(height: 20),
+                            Text('Album Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
+                            Text('$album_name',style: TextStyle(fontSize: 20)),
+                            SizedBox(height: 20),
+                            Text('Explicit', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
+                            Text('$explicit',style: TextStyle(fontSize: 20)),
+                            SizedBox(height: 20),
+                            Text('Rating', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
+                            Text('$track_rating',style: TextStyle(fontSize: 20)),
+                            SizedBox(height: 20),
+                            Text('Lyrics', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
+                            Container(margin: EdgeInsets.only(top: 8.0,
+                                bottom: 8.0)),
+                            StreamBuilder(
+                              stream: bloc.movieTrailers,
+                              builder:
+                                  (context, AsyncSnapshot<Future<lyrics>> snapshot) {
+                                if (snapshot.hasData) {
+                                  return FutureBuilder(
+                                    future: snapshot.data,
+                                    builder: (context,
+                                        AsyncSnapshot<lyrics> itemSnapShot) {
+                                      if (itemSnapShot.hasData) {
+                                        if (itemSnapShot.data.results.length > 0)
+                                          return trailerLayout(itemSnapShot.data);
+                                        else
+                                          return noTrailer(itemSnapShot.data);
+                                      } else {
+                                        return Center(child: CircularProgressIndicator());
+                                      }
+                                    },
+                                  );
+                                } else {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                )
+            ): Text(
+              'No Internet Connection',
             ),
-          ),
-        )
+          );
+        },
+        child: Container(),
       ),
     );
   }
 }
-//Widget startListingDetails(){
-//  bloc.fetchAllMusic();
-//  return SafeArea(
-//      child: Container(
-//        child: Padding(
-//          padding: const EdgeInsets.all(20.0),
-//          child: ListView(
-//            children: <Widget>[
-//              Column(
-//                mainAxisAlignment: MainAxisAlignment.start,
-//                crossAxisAlignment: CrossAxisAlignment.start,
-//                children: <Widget>[
-//                  Text('Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-//                  Text('$track_name', style: TextStyle(fontSize: 20)),
-//                  SizedBox(height: 20),
-//                  Text('Artist', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-//                  Text('$artist_name',style: TextStyle(fontSize: 20)),
-//                  SizedBox(height: 20),
-//                  Text('Album Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-//                  Text('$album_name',style: TextStyle(fontSize: 20)),
-//                  SizedBox(height: 20),
-//                  Text('Explicit', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-//                  Text('$explicit',style: TextStyle(fontSize: 20)),
-//                  SizedBox(height: 20),
-//                  Text('Rating', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-//                  Text('$track_rating',style: TextStyle(fontSize: 20)),
-//                  SizedBox(height: 20),
-//                  Text('Lyrics', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-//                  Container(margin: EdgeInsets.only(top: 8.0,
-//                      bottom: 8.0)),
-//                  StreamBuilder(
-//                    stream: bloc.movieTrailers,
-//                    builder:
-//                        (context, AsyncSnapshot<Future<lyrics>> snapshot) {
-//                      if (snapshot.hasData) {
-//                        return FutureBuilder(
-//                          future: snapshot.data,
-//                          builder: (context,
-//                              AsyncSnapshot<lyrics> itemSnapShot) {
-//                            if (itemSnapShot.hasData) {
-//                              if (itemSnapShot.data.results.length > 0)
-//                                return trailerLayout(itemSnapShot.data);
-//                              else
-//                                return noTrailer(itemSnapShot.data);
-//                            } else {
-//                              return Center(child: CircularProgressIndicator());
-//                            }
-//                          },
-//                        );
-//                      } else {
-//                        return Center(child: CircularProgressIndicator());
-//                      }
-//                    },
-//                  ),
-//                ],
-//              ),
-//            ],
-//          ),
-//        ),
-//      )
-//  );
-//}
+
 Widget noTrailer(lyrics data) {
   return Center(
     child: Container(

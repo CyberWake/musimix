@@ -27,7 +27,8 @@ class _trendingUIState extends State<trendingUI> {
     bloc.fetchAllMusic();
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Trending')),
+        backgroundColor: Colors.white,
+        title: Center(child: Text('Trending',style: TextStyle(color: Colors.black),)),
       ),
       body: OfflineBuilder(
           connectivityBuilder: (
@@ -70,7 +71,7 @@ class _trendingUIState extends State<trendingUI> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Expanded(
-                    child: Icon(Icons.library_music),
+                    child: Icon(Icons.library_music, color: Colors.black26,size: 28,),
                     flex: 2,
                   ),
                   Expanded(
