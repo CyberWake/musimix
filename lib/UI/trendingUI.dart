@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:musix/UI/detailsUI.dart';
 import '../models/trendingItems.dart';
 import '../BLoC/music_bloc.dart';
+import '../BLoC/music_detail_bloc_provider.dart';
 
-class trendingUI extends StatelessWidget {
+class trendingUI extends StatefulWidget {
+  @override
+  _trendingUIState createState() => _trendingUIState();
+}
+
+class _trendingUIState extends State<trendingUI> {
+  @override
+  void initState() {
+    super.initState();
+    bloc.fetchAllMusic();
+  }
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     bloc.fetchAllMusic();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trending'),
+        title: Center(child: Text('Trending')),
       ),
       body: StreamBuilder(
         stream: bloc.allMusic,
@@ -28,12 +46,56 @@ class trendingUI extends StatelessWidget {
     return ListView.builder(
         itemCount: snapshot.data.results.length,
         itemBuilder: (BuildContext context, int index) {
-          return Text(snapshot.data.results[index].album_name);
-//          return Image.network(
-//            'https://image.tmdb.org/t/p/w185${snapshot.data
-//                .results[index].poster_path}',
-//            fit: BoxFit.cover,
-//          );
+          return InkResponse(
+            child: Card(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Expanded(
+                    child: Icon(Icons.library_music),
+                    flex: 2,
+                  ),
+                  Expanded(
+                    child: ListTile(
+                      title: Text(snapshot.data.results[index].track_name),
+                      subtitle: Text(snapshot.data.results[index].album_name),
+                    ),
+                    flex: 7,
+                  ),
+                  Expanded(child: ListTile(
+                    trailing: Text(snapshot.data.results[index].artist_name),
+                  ),
+                  flex: 3,)
+//                ListTile(
+//                  leading: Icon(Icons.library_music),
+//                  title: Text(snapshot.data.results[index].track_name),
+//                  subtitle: Text(snapshot.data.results[index].album_name),
+//                  trailing: Text(snapshot.data.results[index].artist_name),
+//                ),
+                ],
+              ),
+//            child: Text(snapshot.data.results[index].album_name),
+            ),
+            onTap: () => openDetailPage(snapshot.data, index),
+          );
         });
+  }
+  openDetailPage(trendingItems data, int index) {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return MusicDetailBlocProvider(
+          child: detailsUI(
+              artist_name:data.results[index].artist_name,
+              track_name:data.results[index].track_name,
+              album_name:data.results[index].album_name,
+              explicit:data.results[index].explicit,
+              track_rating:data.results[index].track_rating,
+              track_id:data.results[index].track_id
+          ),
+        );
+      }),
+    );
   }
 }
