@@ -3,6 +3,7 @@ import 'package:musix/UI/detailsUI.dart';
 import '../models/trendingItems.dart';
 import '../BLoC/music_bloc.dart';
 import '../BLoC/music_detail_bloc_provider.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 
 class trendingUI extends StatefulWidget {
   @override
@@ -28,20 +29,37 @@ class _trendingUIState extends State<trendingUI> {
       appBar: AppBar(
         title: Center(child: Text('Trending')),
       ),
-      body: StreamBuilder(
-        stream: bloc.allMusic,
-        builder: (context, AsyncSnapshot<trendingItems> snapshot) {
-          if (snapshot.hasData) {
-            return buildList(snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return Center(child: CircularProgressIndicator());
-        },
+      body: OfflineBuilder(
+          connectivityBuilder: (
+              BuildContext context,
+              ConnectivityResult connectivity,
+              Widget child,
+              ) {
+            final bool connected = connectivity != ConnectivityResult.none;
+            return Center(
+              child: connected?startListing(): Text(
+                'No Internet Connection',
+              ),
+            );
+          },
+        child: Container(),
       ),
     );
   }
-
+  Widget startListing(){
+    bloc.fetchAllMusic();
+    return StreamBuilder(
+      stream: bloc.allMusic,
+      builder: (context, AsyncSnapshot<trendingItems> snapshot) {
+        if (snapshot.hasData) {
+          return buildList(snapshot);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error.toString());
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
   Widget buildList(AsyncSnapshot<trendingItems> snapshot) {
     return ListView.builder(
         itemCount: snapshot.data.results.length,
