@@ -1,63 +1,53 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_offline/flutter_offline.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:musix/models/bookmarks.dart';
+import 'package:musix/models/databaseHelper.dart';
+
 import '../BLoC/music_detail_bloc_provider.dart';
 import '../models/lyrics.dart';
-import 'package:flutter_offline/flutter_offline.dart';
 
-class detailsUI extends StatefulWidget {
-  final String artist_name;
-  final String track_name;
-  final String album_name;
+class DetailsUI extends StatefulWidget {
+  final String artistName;
+  final String trackName;
+  final String albumName;
   final String explicit;
-  final String track_rating;
-  final int track_id;
+  final String trackRating;
+  final int trackId;
+  final Function updateBookmarks;
+  final int index;
 
-  detailsUI({
-    this.artist_name,
-    this.track_name,
-    this.album_name,
-    this.explicit,
-    this.track_rating,
-    this.track_id
-  });
+  DetailsUI(
+      {this.artistName,
+      this.trackName,
+      this.albumName,
+      this.explicit,
+      this.trackRating,
+      this.trackId,
+      this.updateBookmarks,
+      this.index});
 
   @override
-  State<StatefulWidget> createState() {
-    return detailsUIState(
-        artist_name:artist_name,
-        track_name:track_name,
-        album_name:album_name,
-        explicit:explicit,
-        track_rating:track_rating,
-        track_id:track_id
-
-    );
-  }
+  DetailsUIState createState() => DetailsUIState();
 }
 
-class detailsUIState extends State<detailsUI> {
-  final String artist_name;
-  final String track_name;
-  final String album_name;
-  final String explicit;
-  final String track_rating;
-  final int track_id;
-
+class DetailsUIState extends State<DetailsUI> {
   MusicDetailBloc bloc;
+  bool isBookmarked = false;
+  final _bookmarkDatabase = BookmarkDatabase.instance;
+  Bookmark bookmark;
+  checkBookmarked() async {
+    isBookmarked =
+        await _bookmarkDatabase.isAlreadyBookmarked(widget.trackId.toString());
+  }
 
-  detailsUIState({
-    this.artist_name,
-    this.track_name,
-    this.album_name,
-    this.explicit,
-    this.track_rating,
-    this.track_id
-  });
   @override
   void didChangeDependencies() {
+    checkBookmarked();
     bloc = MusicDetailBlocProvider.of(context);
-    bloc.fetchTrailersById(track_id);
+    bloc.fetchTrailersById(widget.trackId);
     super.didChangeDependencies();
   }
 
@@ -67,86 +57,175 @@ class detailsUIState extends State<detailsUI> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(
-          color:Colors.black
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        title:Text("Track Details",style: TextStyle(color: Colors.black)),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isBookmarked ? Icons.bookmark : Icons.bookmark_border_outlined,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              isBookmarked = await _bookmarkDatabase
+                  .isAlreadyBookmarked(widget.trackId.toString());
+              if (isBookmarked) {
+                dynamic result = await _bookmarkDatabase
+                    .deleteRow(widget.trackId.toString());
+                if (result != null) {
+                  if (widget.index != null && widget.updateBookmarks != null) {
+                    widget.updateBookmarks(widget.index);
+                  }
+                }
+              } else {
+                bookmark = Bookmark(
+                    albumName: widget.albumName,
+                    artistName: widget.artistName,
+                    trackId: widget.trackId,
+                    trackName: widget.trackName,
+                    trackRating: widget.trackRating,
+                    explicit: widget.explicit);
+                dynamic data = bookmark.toMap();
+                dynamic result = await _bookmarkDatabase.addEntry(data);
+                if (result != null) {
+                  print('');
+                }
+              }
+              isBookmarked = await _bookmarkDatabase
+                  .isAlreadyBookmarked(widget.trackId.toString());
+              setState(() {});
+            },
+          )
+        ],
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey[900],
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text("Track Details", style: TextStyle(color: Colors.white)),
       ),
       body: OfflineBuilder(
         connectivityBuilder: (
-            BuildContext context,
-            ConnectivityResult connectivity,
-            Widget child,
-            ) {
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
           final bool connected = connectivity != ConnectivityResult.none;
           return Center(
-            child: connected?SafeArea(
-                child: Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: ListView(
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                            Text('$track_name', style: TextStyle(fontSize: 20)),
-                            SizedBox(height: 20),
-                            Text('Artist', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                            Text('$artist_name',style: TextStyle(fontSize: 20)),
-                            SizedBox(height: 20),
-                            Text('Album Name', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                            Text('$album_name',style: TextStyle(fontSize: 20)),
-                            SizedBox(height: 20),
-                            Text('Explicit', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                            Text('$explicit',style: TextStyle(fontSize: 20)),
-                            SizedBox(height: 20),
-                            Text('Rating', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                            Text('$track_rating',style: TextStyle(fontSize: 20)),
-                            SizedBox(height: 20),
-                            Text('Lyrics', style: TextStyle(fontSize: 16.0,fontWeight: FontWeight.bold),),
-                            Container(margin: EdgeInsets.only(top: 8.0,
-                                bottom: 8.0)),
-                            StreamBuilder(
-                              stream: bloc.movieTrailers,
-                              builder:
-                                  (context, AsyncSnapshot<Future<lyrics>> snapshot) {
-                                if (snapshot.hasData) {
-                                  return FutureBuilder(
-                                    future: snapshot.data,
-                                    builder: (context,
-                                        AsyncSnapshot<lyrics> itemSnapShot) {
-                                      if (itemSnapShot.hasData) {
-                                        if (itemSnapShot.data.results.length > 0)
-                                          return trailerLayout(itemSnapShot.data);
-                                        else
-                                          return noTrailer(itemSnapShot.data);
-                                      } else {
-                                        return Center(child: CircularProgressIndicator());
-                                      }
-                                    },
-                                  );
-                                } else {
-                                  return Center(child: CircularProgressIndicator());
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+            child: connected
+                ? SafeArea(
+                    child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: ListView(
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'Name',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text('${widget.trackName}',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 20),
+                              Text(
+                                'Artist',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text('${widget.artistName}',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 20),
+                              Text(
+                                'Album Name',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text('${widget.albumName}',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 20),
+                              Text(
+                                'Explicit',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text('${widget.explicit}',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 20),
+                              Text(
+                                'Rating',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text('${widget.trackRating}',
+                                  style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 20),
+                              Text(
+                                'Lyrics',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Container(
+                                  margin:
+                                      EdgeInsets.only(top: 8.0, bottom: 8.0)),
+                              StreamBuilder(
+                                stream: bloc.movieTrailers,
+                                builder: (context,
+                                    AsyncSnapshot<Future<Lyrics>> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return FutureBuilder(
+                                      future: snapshot.data,
+                                      builder: (context,
+                                          AsyncSnapshot<Lyrics> itemSnapShot) {
+                                        if (itemSnapShot.hasData) {
+                                          if (itemSnapShot.data.results.length >
+                                              0)
+                                            return trailerLayout(
+                                                itemSnapShot.data);
+                                          else
+                                            return noTrailer(itemSnapShot.data);
+                                        } else {
+                                          return Center(
+                                              child: SpinKitDualRing(
+                                            color: Colors.blueGrey[900],
+                                          ));
+                                        }
+                                      },
+                                    );
+                                  } else {
+                                    return Center(
+                                        child: SpinKitDualRing(
+                                      color: Colors.blueGrey[900],
+                                    ));
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
+                  ))
+                : Text(
+                    'No Internet Connection',
                   ),
-                )
-            ): Text(
-              'No Internet Connection',
-            ),
           );
         },
         child: Container(),
@@ -155,14 +234,15 @@ class detailsUIState extends State<detailsUI> {
   }
 }
 
-Widget noTrailer(lyrics data) {
+Widget noTrailer(Lyrics data) {
   return Center(
     child: Container(
       child: Text("No trailer available"),
     ),
   );
 }
-Widget trailerLayout(lyrics data) {
+
+Widget trailerLayout(Lyrics data) {
   if (data.results.length > 1) {
     return Row(
       children: <Widget>[
@@ -179,15 +259,11 @@ Widget trailerLayout(lyrics data) {
   }
 }
 
-trailerItem(lyrics data, int index) {
+trailerItem(Lyrics data, int index) {
   return Expanded(
     child: Column(
       children: <Widget>[
-        Text(
-          data.results[index].lyrics_body,
-
-            style: TextStyle(fontSize: 20)
-        ),
+        Text(data.results[index].lyrics_body, style: TextStyle(fontSize: 20)),
       ],
     ),
   );

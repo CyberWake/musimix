@@ -1,12 +1,14 @@
 import 'dart:async';
+
 import 'package:musix/models/lyrics.dart';
 
-import 'trending_api_provider.dart';
 import '../models/trendingItems.dart';
+import 'trending_api_provider.dart';
 
 class Repository {
-  final musicApiProvider = trendingAPIProvider();
+  final musicApiProvider = TrendingAPIProvider();
 
-  Future<trendingItems> fetchAllMusic() => musicApiProvider.fetchMusicList();
-  Future<lyrics> fetchLyrics(int track_id) => musicApiProvider.fetchLyrics(track_id);
+  Future<TrendingItems> fetchAllMusic() => musicApiProvider.fetchMusicList();
+  Future<Lyrics> fetchLyrics(int track_id) =>
+      musicApiProvider.fetchLyrics(track_id);
 }

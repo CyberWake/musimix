@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+
 import '../models/lyrics.dart';
 import '../resources/repository.dart';
 
 class MusicDetailBloc {
   final _repository = Repository();
   final _trackId = PublishSubject<int>();
-  final _lyrics = BehaviorSubject<Future<lyrics>>();
+  final _lyrics = BehaviorSubject<Future<Lyrics>>();
 
   Function(int) get fetchTrailersById => _trackId.sink.add;
-  Stream<Future<lyrics>> get movieTrailers => _lyrics.stream;
+  Stream<Future<Lyrics>> get movieTrailers => _lyrics.stream;
 
   MusicDetailBloc() {
     _trackId.stream.transform(_itemTransformer()).pipe(_lyrics);
@@ -24,8 +25,7 @@ class MusicDetailBloc {
 
   _itemTransformer() {
     return ScanStreamTransformer(
-          (Future<lyrics> trailer, int id, int index) {
-        print(index);
+      (Future<Lyrics> trailer, int id, int index) {
         trailer = _repository.fetchLyrics(id);
         return trailer;
       },

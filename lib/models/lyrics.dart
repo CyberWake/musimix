@@ -1,13 +1,11 @@
-class lyrics{
+class Lyrics {
   List<_Result> _results = [];
 
-
-  lyrics.fromJson(Map<String, dynamic> parsedJson) {
-    print(parsedJson['message']['body']['lyrics']['lyrics_body'].length);
+  Lyrics.fromJson(Map<String, dynamic> parsedJson) {
     List<_Result> temp = [];
 
-      _Result result = _Result(parsedJson['message']['body']['lyrics']);
-      temp.add(result);
+    _Result result = _Result(parsedJson['message']['body']['lyrics']);
+    temp.add(result);
 
     _results = temp;
   }
@@ -20,6 +18,5 @@ class _Result {
 
   _Result(result) {
     this.lyrics_body = result['lyrics_body'];
-    print(lyrics_body);
   }
 }

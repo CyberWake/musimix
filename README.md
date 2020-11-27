@@ -1,4 +1,4 @@
-# musix
+# musimix
 
 A new Flutter application.
 

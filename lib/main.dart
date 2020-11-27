@@ -8,12 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Trending',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home:trendingUI()
-    );
+        title: 'Trending',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: TrendingUI());
   }
 }
-
