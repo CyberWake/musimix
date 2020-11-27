@@ -57,6 +57,41 @@ class DetailsUIState extends State<DetailsUI> {
     super.dispose();
   }
 
+  Widget noTrailer(Lyrics data) {
+    return Center(
+      child: Container(
+        child: Text("No trailer available"),
+      ),
+    );
+  }
+
+  Widget trailerLayout(Lyrics data) {
+    if (data.results.length > 1) {
+      return Row(
+        children: <Widget>[
+          trailerItem(data, 0),
+          trailerItem(data, 1),
+        ],
+      );
+    } else {
+      return Row(
+        children: <Widget>[
+          trailerItem(data, 0),
+        ],
+      );
+    }
+  }
+
+  trailerItem(Lyrics data, int index) {
+    return Expanded(
+      child: Column(
+        children: <Widget>[
+          Text(data.results[index].lyrics_body, style: TextStyle(fontSize: 20)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,151 +155,129 @@ class DetailsUIState extends State<DetailsUI> {
         ) {
           final bool connected = connectivity != ConnectivityResult.none;
           return Center(
-            child: connected
-                ? SafeArea(
-                    child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ListView(
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text('${widget.trackName}',
-                                  style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 20),
-                              Text(
-                                'Artist',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text('${widget.artistName}',
-                                  style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 20),
-                              Text(
-                                'Album Name',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text('${widget.albumName}',
-                                  style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 20),
-                              Text(
-                                'Explicit',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text('${widget.explicit}',
-                                  style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 20),
-                              Text(
-                                'Rating',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text('${widget.trackRating}',
-                                  style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 20),
-                              Text(
-                                'Lyrics',
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Container(
-                                  margin:
-                                      EdgeInsets.only(top: 8.0, bottom: 8.0)),
-                              StreamBuilder(
-                                stream: bloc.movieTrailers,
-                                builder: (context,
-                                    AsyncSnapshot<Future<Lyrics>> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return FutureBuilder(
-                                      future: snapshot.data,
-                                      builder: (context,
-                                          AsyncSnapshot<Lyrics> itemSnapShot) {
-                                        if (itemSnapShot.hasData) {
-                                          if (itemSnapShot.data.results.length >
-                                              0)
-                                            return trailerLayout(
-                                                itemSnapShot.data);
-                                          else
-                                            return noTrailer(itemSnapShot.data);
-                                        } else {
-                                          return Center(
-                                              child: SpinKitDualRing(
-                                            color: Colors.blueGrey[900],
-                                          ));
-                                        }
-                                      },
-                                    );
-                                  } else {
-                                    return Center(
-                                        child: SpinKitDualRing(
-                                      color: Colors.blueGrey[900],
-                                    ));
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+              child: connected
+                  ? SafeArea(
+                      child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: ListView(
+                          children: <Widget>[
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Name',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text('${widget.trackName}',
+                                    style: TextStyle(fontSize: 20)),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Artist',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text('${widget.artistName}',
+                                    style: TextStyle(fontSize: 20)),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Album Name',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text('${widget.albumName}',
+                                    style: TextStyle(fontSize: 20)),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Explicit',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text('${widget.explicit}',
+                                    style: TextStyle(fontSize: 20)),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Rating',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text('${widget.trackRating}',
+                                    style: TextStyle(fontSize: 20)),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Lyrics',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Container(
+                                    margin:
+                                        EdgeInsets.only(top: 8.0, bottom: 8.0)),
+                                StreamBuilder(
+                                  stream: bloc.movieTrailers,
+                                  builder: (context,
+                                      AsyncSnapshot<Future<Lyrics>> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return FutureBuilder(
+                                        future: snapshot.data,
+                                        builder: (context,
+                                            AsyncSnapshot<Lyrics>
+                                                itemSnapShot) {
+                                          if (itemSnapShot.hasData) {
+                                            if (itemSnapShot
+                                                    .data.results.length >
+                                                0)
+                                              return trailerLayout(
+                                                  itemSnapShot.data);
+                                            else
+                                              return noTrailer(
+                                                  itemSnapShot.data);
+                                          } else {
+                                            return Center(
+                                                child: SpinKitDualRing(
+                                              color: Colors.blueGrey[900],
+                                            ));
+                                          }
+                                        },
+                                      );
+                                    } else {
+                                      return Center(
+                                          child: SpinKitDualRing(
+                                        color: Colors.blueGrey[900],
+                                      ));
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ))
-                : Text(
-                    'No Internet Connection',
-                  ),
-          );
+                    ))
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            height: 250,
+                            width: 250,
+                            child: Image.asset('assets/no_internet.gif')),
+                        Text(
+                          'Connect to network!',
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ));
         },
         child: Container(),
       ),
     );
   }
-}
-
-Widget noTrailer(Lyrics data) {
-  return Center(
-    child: Container(
-      child: Text("No trailer available"),
-    ),
-  );
-}
-
-Widget trailerLayout(Lyrics data) {
-  if (data.results.length > 1) {
-    return Row(
-      children: <Widget>[
-        trailerItem(data, 0),
-        trailerItem(data, 1),
-      ],
-    );
-  } else {
-    return Row(
-      children: <Widget>[
-        trailerItem(data, 0),
-      ],
-    );
-  }
-}
-
-trailerItem(Lyrics data, int index) {
-  return Expanded(
-    child: Column(
-      children: <Widget>[
-        Text(data.results[index].lyrics_body, style: TextStyle(fontSize: 20)),
-      ],
-    ),
-  );
 }

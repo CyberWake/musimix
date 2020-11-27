@@ -35,16 +35,25 @@ class _TrendingUIState extends State<TrendingUI> {
       appBar: AppBar(
         leading: Container(),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.bookmark,
-              color: Colors.white,
+          Container(
+            width: 40,
+            child: OpenContainer(
+              transitionDuration: Duration(milliseconds: 400),
+              closedColor: Colors.blueGrey[900],
+              tappable: true,
+              closedElevation: 0.0,
+              openElevation: 0.0,
+              closedBuilder: (BuildContext c, VoidCallback action) {
+                return Icon(
+                  Icons.bookmark,
+                  color: Colors.white,
+                );
+              },
+              openBuilder: (BuildContext c, VoidCallback action) {
+                return BookmarkUI();
+              },
             ),
-            onPressed: () async {
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => BookmarkUI()));
-            },
-          )
+          ),
         ],
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
@@ -52,6 +61,7 @@ class _TrendingUIState extends State<TrendingUI> {
         title: Text("Trending", style: TextStyle(color: Colors.white)),
       ),
       body: OfflineBuilder(
+        child: Container(),
         connectivityBuilder: (
           BuildContext context,
           ConnectivityResult connectivity,
@@ -59,14 +69,23 @@ class _TrendingUIState extends State<TrendingUI> {
         ) {
           final bool connected = connectivity != ConnectivityResult.none;
           return Center(
-            child: connected
-                ? startListing()
-                : Text(
-                    'No Internet Connection',
-                  ),
-          );
+              child: connected
+                  ? startListing()
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            height: 250,
+                            width: 250,
+                            child: Image.asset('assets/no_internet.gif')),
+                        Text(
+                          'Connect to network!',
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ));
         },
-        child: Container(),
       ),
     );
   }
