@@ -9,7 +9,7 @@ import '../models/trendingItems.dart';
 class TrendingAPIProvider {
   Client client = Client();
 
-  Future<TrendingItems> fetchMusicList() async {
+  Future<TrendingItems> fetchMusicData() async {
     final response = await client.get(
         "https://api.musixmatch.com/ws/1.1/chart.tracks.get?apikey=b9c5109c29515a0e2633d5916548f95a");
     if (response.statusCode == 200) {
@@ -21,9 +21,9 @@ class TrendingAPIProvider {
     }
   }
 
-  Future<Lyrics> fetchLyrics(int track_id) async {
+  Future<Lyrics> fetchLyricsData(int trackId) async {
     final response = await client.get(
-        "https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=$track_id&apikey=b9c5109c29515a0e2633d5916548f95a");
+        "https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=$trackId&apikey=b9c5109c29515a0e2633d5916548f95a");
 
     if (response.statusCode == 200) {
       return Lyrics.fromJson(json.decode(response.body));

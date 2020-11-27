@@ -1,16 +1,16 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:musix/BLoC/music_detail_bloc_provider.dart';
-import 'package:musix/UI/detailsUI.dart';
 import 'package:musix/models/bookmarks.dart';
 import 'package:musix/models/databaseHelper.dart';
+import 'package:musix/screens/detailsScreen.dart';
 
-class BookmarkUI extends StatefulWidget {
+class BookmarkScreen extends StatefulWidget {
   @override
-  _BookmarkUIState createState() => _BookmarkUIState();
+  _BookmarkScreenState createState() => _BookmarkScreenState();
 }
 
-class _BookmarkUIState extends State<BookmarkUI> {
+class _BookmarkScreenState extends State<BookmarkScreen> {
   List _bookmarksDB = [];
   List<Bookmark> _bookmarksList = [];
   final _bookmarkDatabase = BookmarkDatabase.instance;
@@ -140,7 +140,7 @@ class _BookmarkUIState extends State<BookmarkUI> {
                           },
                           openBuilder: (BuildContext c, VoidCallback action) {
                             return MusicDetailBlocProvider(
-                              child: DetailsUI(
+                              child: LyricsScreen(
                                 artistName: _bookmarksList[index].artistName,
                                 trackName: _bookmarksList[index].trackName,
                                 albumName: _bookmarksList[index].albumName,

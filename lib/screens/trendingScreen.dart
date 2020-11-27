@@ -3,23 +3,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:musix/UI/bookmarkUI.dart';
-import 'package:musix/UI/detailsUI.dart';
+import 'package:musix/screens/bookmarkScreen.dart';
+import 'package:musix/screens/detailsScreen.dart';
 
 import '../BLoC/music_bloc.dart';
 import '../BLoC/music_detail_bloc_provider.dart';
 import '../models/trendingItems.dart';
 
-class TrendingUI extends StatefulWidget {
+class TrendingScreen extends StatefulWidget {
   @override
-  _TrendingUIState createState() => _TrendingUIState();
+  _TrendingScreenState createState() => _TrendingScreenState();
 }
 
-class _TrendingUIState extends State<TrendingUI> {
+class _TrendingScreenState extends State<TrendingScreen> {
   @override
   void initState() {
     super.initState();
-    bloc.fetchAllMusic();
+    bloc.fetchMusicData();
   }
 
   @override
@@ -30,7 +30,7 @@ class _TrendingUIState extends State<TrendingUI> {
 
   @override
   Widget build(BuildContext context) {
-    bloc.fetchAllMusic();
+    bloc.fetchMusicData();
     return Scaffold(
       appBar: AppBar(
         leading: Container(),
@@ -50,7 +50,7 @@ class _TrendingUIState extends State<TrendingUI> {
                 );
               },
               openBuilder: (BuildContext c, VoidCallback action) {
-                return BookmarkUI();
+                return BookmarkScreen();
               },
             ),
           ),
@@ -91,12 +91,12 @@ class _TrendingUIState extends State<TrendingUI> {
   }
 
   Widget startListing() {
-    bloc.fetchAllMusic();
+    bloc.fetchMusicData();
     return StreamBuilder(
       stream: bloc.allMusic,
       builder: (context, AsyncSnapshot<TrendingItems> snapshot) {
         if (snapshot.hasData) {
-          return buildList(snapshot);
+          return buildMusicList(snapshot);
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
@@ -108,7 +108,7 @@ class _TrendingUIState extends State<TrendingUI> {
     );
   }
 
-  Widget buildList(AsyncSnapshot<TrendingItems> snapshot) {
+  Widget buildMusicList(AsyncSnapshot<TrendingItems> snapshot) {
     return ListView.builder(
         itemCount: snapshot.data.results.length,
         itemBuilder: (BuildContext context, int index) {
@@ -171,7 +171,7 @@ class _TrendingUIState extends State<TrendingUI> {
               },
               openBuilder: (BuildContext c, VoidCallback action) {
                 return MusicDetailBlocProvider(
-                  child: DetailsUI(
+                  child: LyricsScreen(
                       artistName: snapshot.data.results[index].artistName,
                       trackName: snapshot.data.results[index].trackName,
                       albumName: snapshot.data.results[index].albumName,

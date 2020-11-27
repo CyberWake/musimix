@@ -9,7 +9,7 @@ import 'package:musix/models/databaseHelper.dart';
 import '../BLoC/music_detail_bloc_provider.dart';
 import '../models/lyrics.dart';
 
-class DetailsUI extends StatefulWidget {
+class LyricsScreen extends StatefulWidget {
   final String artistName;
   final String trackName;
   final String albumName;
@@ -19,7 +19,7 @@ class DetailsUI extends StatefulWidget {
   final Function updateBookmarks;
   final int index;
 
-  DetailsUI(
+  LyricsScreen(
       {this.artistName,
       this.trackName,
       this.albumName,
@@ -30,10 +30,10 @@ class DetailsUI extends StatefulWidget {
       this.index});
 
   @override
-  DetailsUIState createState() => DetailsUIState();
+  LyricsScreenState createState() => LyricsScreenState();
 }
 
-class DetailsUIState extends State<DetailsUI> {
+class LyricsScreenState extends State<LyricsScreen> {
   MusicDetailBloc bloc;
   bool isBookmarked = false;
   final _bookmarkDatabase = BookmarkDatabase.instance;

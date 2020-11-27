@@ -8,7 +8,7 @@ import 'trending_api_provider.dart';
 class Repository {
   final musicApiProvider = TrendingAPIProvider();
 
-  Future<TrendingItems> fetchAllMusic() => musicApiProvider.fetchMusicList();
+  Future<TrendingItems> fetchAllMusic() => musicApiProvider.fetchMusicData();
   Future<Lyrics> fetchLyrics(int track_id) =>
-      musicApiProvider.fetchLyrics(track_id);
+      musicApiProvider.fetchLyricsData(track_id);
 }

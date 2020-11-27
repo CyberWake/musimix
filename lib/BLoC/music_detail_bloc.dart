@@ -1,9 +1,7 @@
 import 'dart:async';
-
+import 'package:musix/database/repository.dart';
 import 'package:rxdart/rxdart.dart';
-
 import '../models/lyrics.dart';
-import '../resources/repository.dart';
 
 class MusicDetailBloc {
   final _repository = Repository();

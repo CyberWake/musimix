@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:musix/UI/trendingUI.dart';
+import 'package:musix/screens/trendingScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,11 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Trending',
+        title: 'MixMatch',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
         debugShowCheckedModeBanner: false,
-        home: TrendingUI());
+        home: TrendingScreen());
   }
 }

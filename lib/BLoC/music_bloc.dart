@@ -1,7 +1,7 @@
+import 'package:musix/database/repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/trendingItems.dart';
-import '../resources/repository.dart';
 
 class MusicBloc {
   final _repository = Repository();
@@ -9,7 +9,7 @@ class MusicBloc {
 
   Stream<TrendingItems> get allMusic => _musicFetcher.stream;
 
-  fetchAllMusic() async {
+  fetchMusicData() async {
     TrendingItems itemModel = await _repository.fetchAllMusic();
     _musicFetcher.sink.add(itemModel);
   }
